@@ -34,7 +34,7 @@ os.environ['XLA_PYTHON_CLIENT_ALLOCATOR']='platform'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 ## set gpu
 # os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
-# os.environ["CUDA_VISIBLE_DEVICES"]="1"
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
 tf_device='/gpu:0'
 
 
@@ -42,7 +42,7 @@ from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 #Setting
-BATCH_SIZE = 32
+BATCH_SIZE = 256
 TARGET_SIZE = (480, 480)  # M variant expects images in shape (480, 480)
 epochs = 200
 
