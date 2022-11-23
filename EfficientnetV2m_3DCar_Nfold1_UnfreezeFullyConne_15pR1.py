@@ -35,7 +35,8 @@ os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 ## set gpu
 # os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
 # os.environ["CUDA_VISIBLE_DEVICES"]="0"
-tf_device='/gpu:0'
+tf_device='/gpu:1'
+#tf_device='/gpu:0'
 
 
 from PIL import Image, ImageFile
@@ -43,11 +44,13 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 #Setting
 BATCH_SIZE = 256
+#BATCH_SIZE = 64
 TARGET_SIZE = (480, 480)  # M variant expects images in shape (480, 480)
 epochs = 200
 
 #Train
-database = pd.read_csv('/media/SSD/Data_photogram_Pcar/Dataset_3DCar.csv') #แก้ data เปลี่ยนตาม fold
+#database = pd.read_csv('/media/SSD/Data_photogram_Pcar/Dataset_3DCar.csv') #แก้ data เปลี่ยนตาม fold
+database = pd.read_csv('/media/SSD/Data_photogram_Pcar/Dataset_3DCar_OS.csv')
 trainframe = database[database['Fold'] != trainfold].reset_index(drop=True)
 #base_dir = '/media/SSD/Data_photogram_Pcar/8-Fold/'
 print(f'Train Data Shape [ {trainframe.shape} ]')
@@ -107,7 +110,6 @@ train_generator = train_datagen.flow_from_dataframe(
         target_size = (height, width),
         batch_size=BATCH_SIZE,
         color_mode= 'rgb',
-        shuffle=True,
         class_mode='categorical')
 
 valid_generator = train_datagen.flow_from_dataframe(
@@ -119,7 +121,6 @@ valid_generator = train_datagen.flow_from_dataframe(
         target_size = (height, width),
         batch_size=BATCH_SIZE,
         color_mode= 'rgb',
-        shuffle=True,
         class_mode='categorical')
 
 # test_generator = test_datagen.flow_from_dataframe(
@@ -171,22 +172,22 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
                                 filepath=checkpoint_filepath, save_freq='epoch', ave_weights_only=False)
 
 # ## Fit model 
-# model.fit(train_generator,
-#     epochs=epochs,
-#     validation_data=valid_generator,
-#     callbacks = [tensorboard_cb, model_checkpoint_callback])
+model.fit(train_generator,
+    epochs=epochs,
+    validation_data=valid_generator,
+    callbacks = [tensorboard_cb, model_checkpoint_callback])
 
-STEP_SIZE_TRAIN=train_generator.n//train_generator.batch_size
-STEP_SIZE_VALID=valid_generator.n//valid_generator.batch_size
-#STEP_SIZE_TEST=test_generator.n//test_generator.batch_size
+# STEP_SIZE_TRAIN=train_generator.n//train_generator.batch_size
+# STEP_SIZE_VALID=valid_generator.n//valid_generator.batch_size
+# #STEP_SIZE_TEST=test_generator.n//test_generator.batch_size
 
-model.fit_generator(generator= avoid_error(train_generator),
-                    steps_per_epoch=STEP_SIZE_TRAIN,
-                    validation_data=avoid_error(valid_generator),
-                    validation_steps=STEP_SIZE_VALID,
-                    epochs=epochs,
-                    callbacks = [tensorboard_cb, model_checkpoint_callback]
-)
+# model.fit_generator(generator= avoid_error(train_generator),
+#                     steps_per_epoch=STEP_SIZE_TRAIN,
+#                     validation_data=avoid_error(valid_generator),
+#                     validation_steps=STEP_SIZE_VALID,
+#                     epochs=epochs,
+#                     callbacks = [tensorboard_cb, model_checkpoint_callback]
+# )
 
 
 ##Save model as TFLiteConverter
