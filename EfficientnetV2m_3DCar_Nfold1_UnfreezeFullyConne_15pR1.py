@@ -29,15 +29,15 @@ print(f'Trainning Data Set Fold-{fold}')
 print(f'-'*100)
 
 ## set tensorflow environ
-os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] ='false'
-os.environ['XLA_PYTHON_CLIENT_ALLOCATOR']='platform'
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+# os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] ='false'
+# os.environ['XLA_PYTHON_CLIENT_ALLOCATOR']='platform'
+# os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+
 ## set gpu
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
 os.environ["CUDA_VISIBLE_DEVICES"]="1"
 #tf_device='/gpu:1'
 #tf_device='/gpu:0'
-
 
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -50,7 +50,7 @@ epochs = 200
 
 #Train
 #database = pd.read_csv('/media/SSD/Data_photogram_Pcar/Dataset_3DCar.csv') #แก้ data เปลี่ยนตาม fold
-database = pd.read_csv('/media/SSD/Data_photogram_Pcar/Dataset_3DCar_OS_solu3.csv')
+database = pd.read_csv('/home/kannika/code/Dataset_3DCar_train.csv')
 trainframe = database[database['Fold'] != trainfold].reset_index(drop=True)
 #base_dir = '/media/SSD/Data_photogram_Pcar/8-Fold/'
 print(f'Train Data Shape [ {trainframe.shape} ]')
@@ -139,7 +139,7 @@ valid_generator = train_datagen.flow_from_dataframe(
 #         class_mode='categorical')
 
 ## Set TensorBoard 
-root_logdir = f'/media/SSD/Data_photogram_Pcar/EffnetV2Model/R1/N{trainfold}/Mylogs_tensor/'  ##เปลี่ยน path 
+root_logdir = f'/media/tohn/SSD/ModelEfficientV2/p15_3Dcar/R1/N{trainfold}/Mylogs_tensor/'  ##เปลี่ยน path 
 if not os.path.exists(root_logdir) :
     os.makedirs(root_logdir)
     
@@ -169,7 +169,7 @@ model.compile(
 )
 
 
-checkpoint_filepath = f'/media/SSD/Data_photogram_Pcar/EffnetV2Model/R1/N{trainfold}/checkpoint/' ### เปลี่ยน path
+checkpoint_filepath = f'/media/tohn/SSD/ModelEfficientV2/p15_3Dcar/R1/N{trainfold}/checkpoint/' ### เปลี่ยน path
 if not os.path.exists(checkpoint_filepath) :
         os.makedirs(checkpoint_filepath)
 model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
@@ -200,7 +200,7 @@ modelName = f'EffnetV2m_R1_3DCAR15p_Nfold{fold}'
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()
 
-Pth_model_save = f'/media/SSD/Data_photogram_Pcar/EffnetV2Model/R1/N{trainfold}/models/'  ##เปลี่ยน path 
+Pth_model_save = f'/media/tohn/SSD/ModelEfficientV2/p15_3Dcar/R1/N{trainfold}/models/'  ##เปลี่ยน path 
 if not os.path.exists(Pth_model_save) :
     os.makedirs(Pth_model_save)
 
