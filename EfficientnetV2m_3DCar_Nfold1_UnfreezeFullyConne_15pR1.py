@@ -33,9 +33,9 @@ os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] ='false'
 os.environ['XLA_PYTHON_CLIENT_ALLOCATOR']='platform'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 ## set gpu
-# os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
-# os.environ["CUDA_VISIBLE_DEVICES"]="0"
-tf_device='/gpu:1'
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
+#tf_device='/gpu:1'
 #tf_device='/gpu:0'
 
 
@@ -43,14 +43,14 @@ from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 #Setting
-BATCH_SIZE = 256
-#BATCH_SIZE = 64
+BATCH_SIZE = 64
+#BATCH_SIZE = 128
 TARGET_SIZE = (480, 480)  # M variant expects images in shape (480, 480)
 epochs = 200
 
 #Train
 #database = pd.read_csv('/media/SSD/Data_photogram_Pcar/Dataset_3DCar.csv') #แก้ data เปลี่ยนตาม fold
-database = pd.read_csv('/media/SSD/Data_photogram_Pcar/Dataset_3DCar_OS.csv')
+database = pd.read_csv('/media/SSD/Data_photogram_Pcar/Dataset_3DCar_OS_solu3.csv')
 trainframe = database[database['Fold'] != trainfold].reset_index(drop=True)
 #base_dir = '/media/SSD/Data_photogram_Pcar/8-Fold/'
 print(f'Train Data Shape [ {trainframe.shape} ]')
@@ -87,19 +87,23 @@ model.summary()
 ## Create Data Loader
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+# train_datagen = ImageDataGenerator(
+#       rescale=1./255,
+#       validation_split=0.25,
+#       rotation_range=40,
+#       width_shift_range=0.2,
+#       height_shift_range=0.2,
+#       shear_range=0.2,
+#       zoom_range=0.2,
+#       horizontal_flip=True,,
+#       fill_mode='nearest')
+
 train_datagen = ImageDataGenerator(
       rescale=1./255,
       validation_split=0.25,
-      rotation_range=30,
-      width_shift_range=0.2,
-      height_shift_range=0.2,
-      brightness_range=[0.5,1.5],
-      shear_range=0.4,
-      zoom_range=0.2,
-      horizontal_flip=False,
       fill_mode='nearest')
 
-test_datagen = ImageDataGenerator(rescale=1./255)
+#test_datagen = ImageDataGenerator(rescale=1./255)
 
 train_generator = train_datagen.flow_from_dataframe(
         dataframe = trainframe,
